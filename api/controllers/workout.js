@@ -118,4 +118,5 @@ module.exports = {
   findAll,
   findById,
   deleteById,
+  updateById
 };

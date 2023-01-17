@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "date-fn": "^0.0.2",
+    "react-router-dom": "^6.6.2"
+  }
+}

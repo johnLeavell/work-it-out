@@ -1,12 +1,17 @@
 const Workout = require("../models/workout");
 
-// create new workout object
+const handleError = (error, res) => {
+  console.error("Error:", error);
+  return res.status(500).send("Something went wrong. Please try again");
+};
+
 const create = async (req, res) => {
   if (!req.body) {
     return res
       .status(400)
-      .send({ message: "Please fill in all required fileds." });
+      .send({ message: "Please fill in all required fields." });
   }
+
   try {
     const workout = await Workout.create({
       title: req.body.title,
@@ -15,31 +20,20 @@ const create = async (req, res) => {
     });
     return res.status(200).json(workout);
   } catch (error) {
-    if (error) {
-      console.info("400 at POST /workout", error);
-      return res.status(400).send(error.message);
-    }
-    console.error("500 error at POST /workout", error);
-    return res.status(500).send("Something went wrong. Please try again");
+    console.info("400 at POST /workout", error);
+    return res.status(400).send(error.message);
   }
 };
 
-// get all workouts
 const findAll = async (req, res) => {
   try {
     const workouts = await Workout.find({}).sort({ createdAt: -1 });
-
     return res.status(200).json({ workouts });
   } catch (error) {
-    if (error) {
-      console.log("Find error", error);
-      return res.status(400).json({ error: error.message });
-    }
-    return res.status(500).json({ error: error.message });
+    console.log("Find error", error);
+    return res.status(400).json({ error: error.message });
   }
 };
-
-// find by id
 
 const findById = async (req, res) => {
   if (!req.params.id) {
@@ -47,6 +41,7 @@ const findById = async (req, res) => {
       .status(400)
       .send({ message: "Workout not found with id" + req.params.id });
   }
+
   try {
     const workout = await Workout.findById(req.params.id);
     return res.status(200).json(workout);
@@ -56,16 +51,17 @@ const findById = async (req, res) => {
         .status(404)
         .send({ message: "Error getting workout with id " + req.params.id });
     }
+    return handleError(error, res);
   }
 };
 
-// delet by id
 const deleteById = async (req, res) => {
   if (!req.params.id) {
     return res.status(400).json({ message: "Workout not found with id" });
   }
+
   try {
-    const workout = await Workout.findByIdAndRemove(req.params.id);
+    await Workout.findByIdAndRemove(req.params.id);
     res.send({ message: "Workout deleted successfully " });
   } catch (error) {
     if (error.kind === "ObjectId" || error.name === "NotFound") {
@@ -73,9 +69,7 @@ const deleteById = async (req, res) => {
         .status(404)
         .json({ message: "Workout not found with id " + req.params.id });
     }
-    return res
-      .status(500)
-      .json({ message: "Error deleting workout with id " + req.params.id });
+    return handleError(error, res);
   }
 };
 
@@ -85,6 +79,7 @@ const updateById = async (req, res) => {
       .status(400)
       .json({ message: "Please enter all required fields" });
   }
+
   try {
     const workout = await Workout.findByIdAndUpdate(
       req.params.id,
@@ -97,19 +92,20 @@ const updateById = async (req, res) => {
     );
     if (!workout) {
       return res
-        .satus(404)
+        .status(404)
         .json({ message: "Workout not found with id " + req.params.id });
     }
     res.send(workout);
   } catch (error) {
     if (error.kind === "ObjectId") {
       return res
-        .status(404)
-        .json({ message: "Workout not found wiht id " + req.params.id });
+        .ststus(404)
+        .json({ message: "Workout not found with id " + req.params.id });
     }
+
     return res
       .status(500)
-      .json({ message: "Error upadting wokout with id " + req.params.id });
+      .json({ message: "Error updating workout with id " + req.params.id });
   }
 };
 
@@ -118,5 +114,5 @@ module.exports = {
   findAll,
   findById,
   deleteById,
-  updateById
+  updateById,
 };

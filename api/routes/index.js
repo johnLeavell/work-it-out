@@ -11,7 +11,7 @@ router.get("/api/workout/:id", workoutController.findById);
 router.delete("/api/workout/:id", workoutController.deleteById);
 
 // user routes
-router.post("api/login", userController.loginUser);
+router.post("/api/login", userController.loginUser);
 router.post("/api/signup", userController.signupUser);
 
 module.exports = router;

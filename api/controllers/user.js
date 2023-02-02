@@ -1,37 +1,31 @@
 const User = require("../models/user");
 const { generateToken } = require("../utils/generateJwtToken");
 
-//login
+const handleResponse = (res, statusCode, payload) =>
+  res.status(statusCode).json(payload);
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const user = await User.login(email, password);
-
-    // token
     const token = generateToken(user._id);
-    res.ststus(200).json({ email, token });
+    handleResponse(res, 200, { email, token });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    handleResponse(res, 400, { error: error.message });
   }
 };
 
-
-//signup
-
 const signupUser = async (req, res) => {
-    const {email, password} = req.body
-    try {
-        const user = await User.signup(email, password);
+  const { email, password } = req.body;
 
-        // token
-        const token = generateToken(user._id_)
-            
-        res.status(200).json({email, token})
-    } catch (error) {
-        res.status(400).json({error: error.message})
-    }
-}
+  try {
+    const user = await User.signup(email, password);
+    const token = generateToken(user._id);
+    handleResponse(res, 200, { email, token });
+  } catch (error) {
+    handleResponse(res, 400, { error: error.message });
+  }
+};
 
-module.exports = { signupUser, loginUser}
+module.exports = { signupUser, loginUser };
